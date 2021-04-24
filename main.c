@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
 	char buff[50];
 	int i = scanf("%s", buff);
 	while(strcmp(buff,"0") != 0) {
-		printf("return del send: %li\n", socket_send(&socket, buff, strlen(buff)));
+		socket_send(&socket, buff, strlen(buff));
 		i = scanf("%s", buff);
 	}
 	i += i;

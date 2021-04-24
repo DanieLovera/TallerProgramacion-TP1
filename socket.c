@@ -78,13 +78,21 @@ ssize_t socket_send(socket_t *self, const void *buffer, size_t length) {
 	size_t sent_bytes_aux = 0;
 
 	while (sent_bytes < length && sent_bytes != ERROR) {
-		if ((length - sent_bytes) >= size_of_long_sent) {
+		if ((length - sent_bytes) >= size_of_long_send) {
 			bytes_to_send = *((uint32_t*)current_buffer);
 			bytes_to_send = htonl(bytes_to_send);
-			sent_bytes_aux = send(self->file_descriptor, &bytes_to_send, size_of_long_send, MSG_NOSIGNAL);
+			sent_bytes_aux = send(self->file_descriptor, 
+							 	  &bytes_to_send, 
+							 	  size_of_long_send, 
+							 	  MSG_NOSIGNAL);
 		} else {
-			sent_bytes_aux = send(self->file_descriptor, current_buffer, size_of_short_send, MSG_NOSIGNAL);
+			sent_bytes_aux = send(self->file_descriptor, 
+								  current_buffer, 
+								  size_of_short_send, 
+								  MSG_NOSIGNAL);
 		}
+		DEBUG_PRINT("'send' in socket_send:socket.c: %s\n", 
+			 		 strerror(errno))
 		sent_bytes += sent_bytes_aux;
 		current_buffer += sent_bytes_aux;
 	}
