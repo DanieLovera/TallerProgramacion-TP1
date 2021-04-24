@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <netdb.h>
+#include <arpa/inet.h>
 #include <errno.h>
 
 #define SUCCESS 0
@@ -68,11 +69,29 @@ int socket_connect(socket_t *self, const char *host, const char *service) {
 	return rt_code;
 }
 
-ssize_t socket_send(socket_t *self, const char *buffer, size_t length) {
-	return -1;
+ssize_t socket_send(socket_t *self, const void *buffer, size_t length) {
+	const char *current_buffer = buffer;
+	int size_of_long_send = sizeof(uint32_t);
+	int size_of_short_send = sizeof(char);
+	uint32_t bytes_to_send = 0;
+	size_t sent_bytes = 0;
+	size_t sent_bytes_aux = 0;
+
+	while (sent_bytes < length && sent_bytes != ERROR) {
+		if ((length - sent_bytes) >= size_of_long_sent) {
+			bytes_to_send = *((uint32_t*)current_buffer);
+			bytes_to_send = htonl(bytes_to_send);
+			sent_bytes_aux = send(self->file_descriptor, &bytes_to_send, size_of_long_send, MSG_NOSIGNAL);
+		} else {
+			sent_bytes_aux = send(self->file_descriptor, current_buffer, size_of_short_send, MSG_NOSIGNAL);
+		}
+		sent_bytes += sent_bytes_aux;
+		current_buffer += sent_bytes_aux;
+	}
+	return sent_bytes;
 }
 
-ssize_t socket_receive(socket_t *self, char *buffer, size_t length) {
+ssize_t socket_receive(socket_t *self, void *buffer, size_t length) {
 	return -1;
 }
 
