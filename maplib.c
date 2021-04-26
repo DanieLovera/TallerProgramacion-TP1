@@ -2,7 +2,7 @@
 
 #define SUCCESS 0
 #define ERROR -1
-#define INVALID_CHARACTER -1
+#define INVALID_CHARACTER 0xff
 
 static int hill_cipher_map_char(unsigned char *character);
 static int hill_cipher_unmap_char(unsigned char *value);
@@ -39,8 +39,9 @@ static int hill_cipher_map_char(unsigned char *character) {
 	if (*character >= 'A' && *character <= 'Z') {
 		*character = *character - 'A';
 		return SUCCESS;
-	}
-	return INVALID_CHARACTER;
+	} 
+	*character = INVALID_CHARACTER;
+	return ERROR;
 }
 
 static int hill_cipher_unmap_char(unsigned char *value) {
@@ -48,5 +49,5 @@ static int hill_cipher_unmap_char(unsigned char *value) {
 		*value = *value + 'A';
 		return SUCCESS;
 	}
-	return INVALID_CHARACTER;
+	return ERROR;
 }

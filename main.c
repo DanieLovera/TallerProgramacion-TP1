@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
 	hill_cipher_t hill_cipher;
 	char *cadena = "CDIB";
 
-	hill_cipher_init(&hill_cipher, cadena, strlen(cadena));
+	hill_cipher_init(&hill_cipher, (const unsigned char*)cadena, strlen(cadena));
 	do_something(&hill_cipher);
 	/*char character = 0;
 	scanf("%c", &character);
