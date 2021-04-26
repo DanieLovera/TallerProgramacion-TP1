@@ -1,4 +1,5 @@
 #include "hill_cipher.h"
+#include "maplib.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,23 +7,6 @@
 
 #define SUCCESS 0
 #define ERROR -1
-#define INVALID_CHARACTER -1
-
-static void hill_cipher_map_char(unsigned char *character) {
-	if (*character >= 'A' && *character <= 'Z') {
-		*character = *character - 'A';
-	} else {
-		*character = INVALID_CHARACTER;
-	}
-}
-
-static int hill_cipher_unmap_char(unsigned char *value) {
-	if (*value >= ('A'-'A') && *value <= ('Z'-'A')) {
-		*value = *value + 'A';
-		return SUCCESS;
-	}
-	return ERROR;
-}
 
 size_t hill_cipher_key_dimension(hill_cipher_t *self) {
 	return sqrt(self->key_length);
@@ -34,18 +18,6 @@ void hill_cipher_init_wrapper(hill_cipher_t *self, const unsigned char *buffer, 
 	memcpy(self->result, buffer, self->result_length);
 }
 
-void hill_cipher_map(unsigned char *buffer, size_t length) {
-	for (int i = 0; i < length; i++) {
-		hill_cipher_map_char(&(buffer[i]));
-	}
-}
-
-void hill_cipher_unmap(unsigned char *buffer, size_t length) {
-	for (int i = 0; i < length; i++) {
-		hill_cipher_unmap_char(&(buffer[i]));
-	}
-}
-
 void hill_cipher_swap(unsigned char *first_char, unsigned char *second_char) {
 	unsigned char aux_char = *first_char;
 	*first_char = *second_char;
@@ -54,7 +26,7 @@ void hill_cipher_swap(unsigned char *first_char, unsigned char *second_char) {
 
 void hill_cipher_filter(unsigned char *buffer, size_t *length) {
 	for (int i = 0; i < *length; i++) {
-		if (buffer[i] == INVALID_CHARACTER) {
+		if (hill_cipher_is_valid_value(buffer[i]) == ERROR) {
 			for (int j = i; j < *length - 1; j++) {
 				hill_cipher_swap(&(buffer[j]), &(buffer[j+1]));
 			}
@@ -76,11 +48,10 @@ void hill_cipher_encode_op(hill_cipher_t *self) {
 	int dimension = hill_cipher_key_dimension(self);
 	int result_length = hill_cipher_new_length(self, dimension);
 
-
 	unsigned char *aux = calloc(result_length, sizeof(char));
 	memcpy(aux, self->result, self->result_length);
 	free(self->result);
-	self->result = calloc(result_length, 1); //antes malloc
+	self->result = calloc(result_length, 1); 
 	self->result_length = result_length;
 	
 	int result_iterations = (self->result_length) / dimension; 
@@ -140,5 +111,3 @@ void hill_cipher_uninit(hill_cipher_t *self) {
 	hill_cipher_free_key(self);
 	hill_cipher_free_result(self);
 }
-
-
