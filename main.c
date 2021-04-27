@@ -9,7 +9,6 @@
 #define END -1
 
 int main(int argc, const char *argv[]) {
-	
 	const char *file_path = FILE_PATH;
 	int cmp_status = strcmp(file_path, "-");
 	FILE* file = (cmp_status == 0) ? stdin : fopen(argv[3], "r");
