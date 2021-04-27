@@ -19,7 +19,7 @@ int client_protocol_init(client_protocol_t *self,
 
 /**
  * @brief Ejecuta el protocolo cliente.
- * @param file: .
+ * @param file: archivo desde el cual el cliente lee la informacion.
  * @param service: Puerto de la maquina en el que se ubicara un socket.
  */
 void client_protocol_run(client_protocol_t *self, FILE *file);
