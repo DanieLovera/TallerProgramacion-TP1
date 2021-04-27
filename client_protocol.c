@@ -1,6 +1,6 @@
 #include "client_protocol.h"
 #include "common_communication_protocol.h"
-#include "maplib.h"
+#include "common_maplib.h"
 #include <stdlib.h>
 #include <arpa/inet.h>
 
@@ -46,18 +46,18 @@ void client_protocol_output_result(client_protocol_t *self,
 void client_protocol_read_and_process(client_protocol_t *self, 
 									  comm_protocol_t *comm_protocol, 
 									  FILE *file) {
-	char *server_response = NULL; 
+	//char *server_response = NULL; 
 	char *buffer = NULL;
-	ssize_t response_size = 0;
+	//ssize_t response_size = 0;
 	size_t buffer_size = 0;
 
 	ssize_t read_bytes = getline(&buffer, &buffer_size, file);
 	while(read_bytes != EOF) {
 		comm_protocol_client_send(comm_protocol, buffer, read_bytes);
-		comm_protocol_client_receive(comm_protocol, 
-									 &server_response, 
-									 &response_size);
-		client_protocol_output_result(self, server_response, (size_t)response_size);
+		//comm_protocol_client_receive(comm_protocol, 
+		//							 &server_response, 
+		//							 &response_size);
+		//client_protocol_output_result(self, server_response, (size_t)response_size);
 		read_bytes = getline(&buffer, &buffer_size, file);
 	}
 	free(buffer);

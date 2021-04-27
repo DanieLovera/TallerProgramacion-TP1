@@ -1,5 +1,5 @@
-#include "hill_cipher.h"
-#include "maplib.h"
+#include "server_hill_cipher.h"
+#include "common_maplib.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,5 +1,4 @@
-#include "socket.h"
-#include "hill_cipher.h"
+#include "common_socket.h"
 #include "client_protocol.h"
 #include <stdio.h>
 #include <string.h>

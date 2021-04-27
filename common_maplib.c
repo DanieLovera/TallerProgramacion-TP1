@@ -1,4 +1,4 @@
-#include "maplib.h"
+#include "common_maplib.h"
 
 #define SUCCESS 0
 #define ERROR -1

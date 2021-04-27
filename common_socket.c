@@ -1,5 +1,5 @@
 //#define _POSIX_C_SOURCE 200112L
-#include "socket.h"
+#include "common_socket.h"
 #include <sys/socket.h>
 #include <stdbool.h>
 #include <string.h>

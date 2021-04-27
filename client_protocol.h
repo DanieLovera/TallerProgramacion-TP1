@@ -1,7 +1,7 @@
 #ifndef _CLIENT_PROTOCOL_
 #define _CLIENT_PROTOCOL_
 
-#include "socket.h"
+#include "common_socket.h"
 #include <stdio.h>
 
 typedef struct client_protocol {
