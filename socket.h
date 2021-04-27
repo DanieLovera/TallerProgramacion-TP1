@@ -53,7 +53,7 @@ int socket_connect(socket_t *self, const char *host, const char *service);
 ssize_t socket_send(socket_t *self, const void *buffer, size_t length);
 
 /**
- * @brief Recibe stream de datos a traves del socket.
+ * @brief Recibe un stream de datos a traves del socket.
  * @param buffer: Puntero generico a strem de datos.
  * @param length: Longitud del buffer a enviar.
  * @returns Devuelve un 0 en caso de exito o -1 en caso de error.
