@@ -89,15 +89,6 @@ static void _hill_cipher_encode(hill_cipher_t *self);
 static void _hill_cipher_swap(unsigned char *first_char, 
 							  unsigned char *second_char);
 
-/*void do_something(hill_cipher_t *self) {
-	char strin[] = "ZXY";
-	hill_cipher_encode(self, (unsigned char*)strin, strlen(strin));
-	fwrite(self->key, 1, self->key_length, stdout);
-	printf("\n");
-	fwrite(self->result, 1, self->result_length, stdout);
-	printf("\n");
-}*/
-
 void hill_cipher_init(hill_cipher_t *self, 
 					  const unsigned char *key, 
 					  size_t key_length) {
