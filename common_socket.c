@@ -270,7 +270,9 @@ static int _socket_connect(socket_t *self, struct addrinfo *result) {
 static int _socket_bind(socket_t *self, struct addrinfo *result) {
 	int val = 1;
 	int status = ERROR;
-	setsockopt(self->_file_descriptor, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
+	setsockopt(self->_file_descriptor, SOL_SOCKET, 
+			   SO_REUSEADDR, &val, 
+			   sizeof(val));
 	status = bind(self->_file_descriptor, result->ai_addr, result->ai_addrlen);
 	socket_print_error(status, strerror(status));
 	return status;

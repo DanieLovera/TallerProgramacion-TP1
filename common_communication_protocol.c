@@ -89,7 +89,9 @@ static ssize_t _comm_protocol_send_size(comm_protocol_t *self,
 	ssize_t sent_bytes = 0;
 	uint16_t bytes_to_send = (uint16_t)size;
 	bytes_to_send = htons(bytes_to_send);
-	sent_bytes = socket_send(self->_socket, (const void*)(&bytes_to_send), sizeof(uint16_t));
+	sent_bytes = socket_send(self->_socket, 
+							 (const void*)(&bytes_to_send), 
+							 sizeof(uint16_t));
 	return sent_bytes != sizeof(uint16_t) ? ERROR : sent_bytes;
 }
 
@@ -105,7 +107,9 @@ static ssize_t _comm_protocol_receive_size(comm_protocol_t *self,
 	uint16_t response_size = 0;
 	ssize_t received_bytes = 0;
 
-	received_bytes = socket_receive(self->_socket, (void*)(&response_size), sizeof(uint16_t));
+	received_bytes = socket_receive(self->_socket, 
+									(void*)(&response_size), 
+									sizeof(uint16_t));
 	if (received_bytes != PEER_CLOSED) {
 		if (received_bytes != sizeof(uint16_t)) {
 			return ERROR;

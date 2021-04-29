@@ -15,10 +15,13 @@ int main(int argc, const char *argv[]) {
 	
 	server_protocol_init(&server_protocol);
 	if (argc == 3) {
-		server_protocol_run(&server_protocol, SERVICE, (const unsigned char*)KEY, strlen(KEY));
+		server_protocol_run(&server_protocol, 
+							SERVICE, 
+							(const unsigned char*)KEY, 
+							strlen(KEY));
 		status = SUCCESS;
 	} else {
-		fprintf(stderr, "Formato invalido, debe ser de la forma: ./server service key\n");
+		fprintf(stderr, "Formato necesario: ./server service key\n");
 	}
 	server_protocol_uninit(&server_protocol);
 

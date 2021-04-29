@@ -21,7 +21,7 @@ int main(int argc, const char *argv[]) {
 		status = SUCCESS;
 		client_protocol_run(&client_protocol, HOST, SERVICE, file);
 	} else {
-		fprintf(stderr, "Formato invalido, debe ser de la forma: ./client host service filename\n");
+		fprintf(stderr, "Formato necesario: ./client host service filename\n");
 	}
 	client_protocol_uninit(&client_protocol);
 	

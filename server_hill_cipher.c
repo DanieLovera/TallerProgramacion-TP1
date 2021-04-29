@@ -33,7 +33,8 @@ static void _hill_cipher_init_result(hill_cipher_t *self,
  * la devuelve en el parametro dimension.
  * @param dimension: Almacena la dimension del algoritmo.
  */
-static void _hill_cipher_result_dimension(hill_cipher_t *self, size_t *dimension);
+static void _hill_cipher_result_dimension(hill_cipher_t *self, 
+										  size_t *dimension);
 
 /**
  * @brief Calcula la nueva longitud del resultado en caso de que
@@ -86,7 +87,9 @@ static void _hill_cipher_encode_math_ops(hill_cipher_t *self,
  * @param elsize: tamanio de los elementos a reservar.
  * @return Devuelve 0 en caso de exito o -1 en caso de error.
  */
-static int _hill_cipher_calloc(unsigned char **buff, size_t nelem, size_t elsize);
+static int _hill_cipher_calloc(unsigned char **buff, 
+							   size_t nelem, 
+							   size_t elsize);
 
 /**
  * @brief Libera memoria del buffer.
@@ -124,7 +127,6 @@ ssize_t hill_cipher_send_result(hill_cipher_t *self,
 static void _hill_cipher_init_key(hill_cipher_t *self, 
 								  const unsigned char *key, 
 								  size_t length) {
-
 	if (key != NULL && length > 0) {
 		_hill_cipher_calloc(&(self->_key), length, sizeof(char));
 		self->_key_length = length;
@@ -153,7 +155,8 @@ static void _hill_cipher_init_result(hill_cipher_t *self,
 	hill_cipher_map(self->_result, self->_result_length);
 }
 
-static void _hill_cipher_result_dimension(hill_cipher_t *self, size_t *dimension) {
+static void _hill_cipher_result_dimension(hill_cipher_t *self, 
+										  size_t *dimension) {
 	*dimension = sqrt(self->_key_length);
 }
 
@@ -226,13 +229,15 @@ static void _hill_cipher_encode_math_ops(hill_cipher_t *self,
 	}
 }
 
-static int _hill_cipher_calloc(unsigned char **buff, size_t nelem, size_t elsize) {
+static int _hill_cipher_calloc(unsigned char **buff, 
+							   size_t nelem, 
+							   size_t elsize) {
 	int status = ERROR;
 	if (nelem != 0 && elsize != 0) {
 		status = SUCCESS;
 		*buff = calloc(nelem, elsize);
 		if (*buff == NULL){
-			fprintf(stderr, "%s\n", strerror(0)); // OJO CON ESTE MENSAJE NO ESTOY SEGURO SI ESTA BIEN
+			fprintf(stderr, "%s\n", strerror(0)); 
 			status = ERROR;
 		}
 	}
