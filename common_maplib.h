@@ -22,8 +22,7 @@ void hill_cipher_unmap(unsigned char *buffer, size_t length);
  * @brief Valida el caracter de entrada
  * @param character: valor a validar.
  * @return Devuelve 0 en caso de que el caracter pertenezca a 'A-Z' 
- * o -1 en caso contrario. (REVISAR EL CASO -1 TENGO UN ERROR SI
- * EL CHARACTER ES CUALQUIERA FUERA DEL RANGO)
+ * o -1 (out of range) en caso contrario.
  */
 int hill_cipher_is_valid_value(const unsigned char character);
 

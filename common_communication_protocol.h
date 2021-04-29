@@ -23,14 +23,16 @@ void comm_protocol_init(comm_protocol_t *self, socket_t *socket);
 void comm_protocol_uninit(comm_protocol_t *self);
 
 /**
- * @brief Protocolo para enviar datos.
+ * @brief Protocolo para enviar datos (actua como callback), 
+ * debe recibir como parametro self un comm_protocol_t, si no se 
+ * cumple resultara en error.
  * @param buffer: Guarda el contenido del buffer que se va a enviar.
  * @param size: Guarda el tamanio del buffer a enviar. 
  * @return Devuelve la cantidad de bytes enviados, en caso de error
  * devuelve -1.
  */
-ssize_t comm_protocol_send(comm_protocol_t *self, 
-						   char *buffer, 
+ssize_t comm_protocol_send(void *self, 
+						   unsigned char *buffer, 
 						   ssize_t size);
 
 /**

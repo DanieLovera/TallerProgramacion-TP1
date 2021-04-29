@@ -4,21 +4,28 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define SUCCESS 0
+#define ERROR -1
+#define HOST argv[1]
+#define SERVICE argv[2]
 #define FILE_PATH argv[3]
-#define END -1
 
 int main(int argc, const char *argv[]) {
 	const char *file_path = FILE_PATH;
-	int cmp_status = strcmp(file_path, "-");
-	FILE* file = (cmp_status == 0) ? stdin : fopen(argv[3], "r");
-
+	int status = ERROR;
+	FILE* file = (strcmp(file_path, "-") == SUCCESS) ? stdin : fopen(argv[3], "r");
 	client_protocol_t client_protocol;
-	//client_protocol_init(&client_protocol, argv[1], argv[2]);
+	
 	client_protocol_init(&client_protocol);
-	client_protocol_run(&client_protocol, argv[1], argv[2], file);
+	if (argc == 4) {
+		status = SUCCESS;
+		client_protocol_run(&client_protocol, HOST, SERVICE, file);
+	} else {
+		fprintf(stderr, "Formato invalido, debe ser de la forma: ./client host service filename\n");
+	}
 	client_protocol_uninit(&client_protocol);
 	
 	if (file != stdin) {fclose(file);}
 
-	return 0;	
+	return status;	
 }

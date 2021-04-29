@@ -4,14 +4,23 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define END -1
+#define SUCCESS 0
+#define ERROR -1
+#define SERVICE argv[1]
+#define KEY argv[2]
 
 int main(int argc, const char *argv[]) {
-
+	int status = ERROR;
 	server_protocol_t server_protocol;
+	
 	server_protocol_init(&server_protocol);
-	server_protocol_run(&server_protocol, argv[1], (const unsigned char*)"CDIB", 4);
+	if (argc == 3) {
+		server_protocol_run(&server_protocol, SERVICE, (const unsigned char*)KEY, strlen(KEY));
+		status = SUCCESS;
+	} else {
+		fprintf(stderr, "Formato invalido, debe ser de la forma: ./server service key\n");
+	}
 	server_protocol_uninit(&server_protocol);
 
-	return 0;	
+	return status;	
 }

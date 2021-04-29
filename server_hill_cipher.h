@@ -2,6 +2,7 @@
 #define _HILL_CIPHER_
 
 #include <stddef.h>
+#include <sys/types.h>
 
 typedef struct hill_cipher {
 	unsigned char *_key;
@@ -20,6 +21,11 @@ void hill_cipher_init(hill_cipher_t *self,
 					  size_t key_length);
 
 /**
+ * @brief Libera los recursos utilizados por el cipher.
+ */
+void hill_cipher_uninit(hill_cipher_t *self);
+
+/**
  * @brief Encripta el mensaje del buffer y se guarda 
  * el resultado en el estado.
  * @param buffer: Valores a encriptar.
@@ -27,12 +33,13 @@ void hill_cipher_init(hill_cipher_t *self,
  * @return: Devuelve 0 en caso de exito y -1 en caso de error.
  */
 int hill_cipher_encode(hill_cipher_t *self, 
-						const unsigned char *buffer, 
-						size_t length);
+					   const unsigned char *buffer, 
+					   size_t length);
 
-/**
- * @brief Libera los recursos utilizados por el cipher.
- */
-void hill_cipher_uninit(hill_cipher_t *self);
+ssize_t hill_cipher_send_result(hill_cipher_t *self, 
+								ssize_t (*callback)(void *context, 
+										 			unsigned char *buffer, 
+						   							ssize_t size), 
+								void *context);
 
 #endif

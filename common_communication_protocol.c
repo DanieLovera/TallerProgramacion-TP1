@@ -50,6 +50,7 @@ static ssize_t _comm_protocol_receive_chunk(comm_protocol_t *self,
 										    char **buffer, 
 										 	ssize_t size);
 
+static void comm_protocol_free(char* buffer);
 
 void comm_protocol_init(comm_protocol_t *self, socket_t *socket) {
 	self->_buffer = NULL;
@@ -57,19 +58,17 @@ void comm_protocol_init(comm_protocol_t *self, socket_t *socket) {
 }
 
 void comm_protocol_uninit(comm_protocol_t *self) {
-	if (self->_buffer != NULL) {
-		free(self->_buffer);
-		self->_buffer = NULL;
-	}
+	comm_protocol_free(self->_buffer);
 	self->_socket = NULL;
 }
 
-ssize_t comm_protocol_send(comm_protocol_t *self, 
-						   char *buffer, 
+ssize_t comm_protocol_send(void *self, 
+						   unsigned char *buffer, 
 						   ssize_t size) {
-	ssize_t sent_bytes = _comm_protocol_send_size(self, size);
+	comm_protocol_t *comm_protocol = (comm_protocol_t*)self;
+	ssize_t sent_bytes = _comm_protocol_send_size(comm_protocol, size);
 	if (sent_bytes != ERROR) {
-		sent_bytes = _comm_protocol_send_chunk(self, buffer, size);
+		sent_bytes = _comm_protocol_send_chunk(comm_protocol, (char*)buffer, size);
 	}
 	return sent_bytes;
 }
@@ -121,10 +120,7 @@ static ssize_t _comm_protocol_receive_chunk(comm_protocol_t *self,
 										    char **buffer, 
 										 	ssize_t size) {
 	ssize_t received_bytes = 0;
-	
-	if (self->_buffer != NULL) {
-		free(self->_buffer);
-	}
+	comm_protocol_free(self->_buffer);
 
 	self->_buffer = calloc(size, sizeof(char));
 	received_bytes = socket_receive(self->_socket, (void*)(self->_buffer), size);
@@ -135,4 +131,10 @@ static ssize_t _comm_protocol_receive_chunk(comm_protocol_t *self,
 		*(buffer) = self->_buffer;
 	}
 	return received_bytes;
+}
+
+static void comm_protocol_free(char *buffer) {
+	if (buffer != NULL) {
+		free(buffer);
+	}
 }
