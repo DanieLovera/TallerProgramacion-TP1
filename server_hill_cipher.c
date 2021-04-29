@@ -166,6 +166,8 @@ static void _hill_cipher_new_length(hill_cipher_t *self,
 	size_t remainder = (self->_result_length % (dimension));
 	if (remainder != 0) {
 		*length = ((self->_result_length / (dimension)) + 1) * (dimension);		
+	} else {
+		*length = self->_result_length;
 	}
 }
 
