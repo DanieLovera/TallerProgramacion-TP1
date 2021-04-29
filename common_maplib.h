@@ -3,8 +3,29 @@
 
 #include <stddef.h>
 
+/**
+ * @brief Funcion que mapea los caracteres del buffer
+ * entre 'A-Z' a '0-25' y en caso de otro caracter se mapea a 0xFF.
+ * @param length: Longitud del buffer.
+ * @return (NO DEBERIA RETORNAR NADA ES AL PEDO LUEGO REVISAR.)
+ */
 int hill_cipher_map(unsigned char *buffer, size_t length);
+
+/**
+ * @brief Funcion que desmapea los caracteres del buffer
+ * entre '0-25' a 'A-Z' y en caso de otro caracter no se toma accion
+ * alguna, la funcion no puede retornar el caracter original.
+ * @param lenght: Longitud del buffer.
+ * @return (NO DEBERIA RETORNAR NADA ES AL PEDO LUEGO REVISAR.)
+ */
 int hill_cipher_unmap(unsigned char *buffer, size_t length);
+
+/**
+ * @brief Valida el caracter de entrada
+ * @return Devuelve 0 en caso de que el caracter pertenezca a 'A-Z' 
+ * o -1 en caso contrario. (REVISAR EL CASO -1 TENGO UN ERROR SI
+ * EL CHARACTER ES CUALQUIERA FUERA DEL RANGO)
+ */
 int hill_cipher_is_valid_value(const unsigned char character);
 
 #endif

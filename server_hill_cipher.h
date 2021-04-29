@@ -4,10 +4,10 @@
 #include <stddef.h>
 
 typedef struct hill_cipher {
-	unsigned char *key;
-	size_t key_length;
-	unsigned char *result;
-	size_t result_length;
+	unsigned char *_key;
+	size_t _key_length;
+	unsigned char *_result;
+	size_t _result_length;
 } hill_cipher_t;
 
 /**
@@ -24,8 +24,9 @@ void hill_cipher_init(hill_cipher_t *self,
  * el resultado en el estado.
  * @param buffer: Valores a encriptar.
  * @param Longitud de los valores a encriptar.
+ * @return: Devuelve 0 en caso de exito y -1 en caso de error.
  */
-void hill_cipher_encode(hill_cipher_t *self, 
+int hill_cipher_encode(hill_cipher_t *self, 
 						const unsigned char *buffer, 
 						size_t length);
 
@@ -33,8 +34,5 @@ void hill_cipher_encode(hill_cipher_t *self,
  * @brief Libera los recursos utilizados por el cipher.
  */
 void hill_cipher_uninit(hill_cipher_t *self);
-
-
-void do_something(hill_cipher_t *self);
 
 #endif

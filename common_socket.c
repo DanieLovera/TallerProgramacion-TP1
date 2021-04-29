@@ -37,7 +37,8 @@ static int _socket_addrinfo_iterate(int (*callback)(struct addrinfo *result,
  * para adaptarse a la firma del callback.
  * @returns Devuelve un 0 en caso de exito o -1 en caso de error.
  */
-static int _socket_create_and_connect(struct addrinfo *result, void *context);
+static int _socket_create_and_connect(struct addrinfo *result, 
+									  void *context);
 
 /**
  * @brief Crea y enlaza un socket, generalmente usado por el servidor.
@@ -47,7 +48,8 @@ static int _socket_create_and_connect(struct addrinfo *result, void *context);
  * para adaptarse a la firma del callback.
  * @returns Devuelve un 0 en caso de exito o -1 en caso de error.
  */
-static int _socket_create_and_bind(struct addrinfo *result, void *context);
+static int _socket_create_and_bind(struct addrinfo *result, 
+								   void *context);
 
 /**
  * @brief Obtiene la informacion sobre la direccion de una maquina.
@@ -59,8 +61,7 @@ static int _socket_create_and_bind(struct addrinfo *result, void *context);
  * obtenidas.
  * @returns Devuelve un 0 en caso de exito o -1 en caso de error.
  */
-static int _socket_get_addrinfo(socket_t *self, 
-							    const char *host, 
+static int _socket_get_addrinfo(const char *host, 
 						  		const char *service,
 						  		const int flags, 
 						  		struct addrinfo **result);
@@ -118,8 +119,16 @@ static int _socket_close(socket_t *self);
  */
 static int _socket_is_in_valid_state(socket_t *self);
 
+/**
+ * @brief Imprime un mensaje de error.
+ * @param status: Guarda un codigo de error, si este es -1
+ * el mensaje sera considerado error y se imprimira en stderr.
+ * @param msg: mensaje de salida por stderr.
+ */
+static void socket_print_error(int status, const char *msg);
+
 void socket_init(socket_t *self) {
-	self->file_descriptor = ERROR;
+	self->_file_descriptor = ERROR;
 }
 
 void socket_uninit(socket_t *self) {
@@ -133,33 +142,37 @@ int socket_bind_and_listen(socket_t *self,
 						   const char *host,
 						   const char *service) {
 	struct addrinfo *result = NULL;
-	int status = _socket_get_addrinfo(self, 
-									  host, 
+	int status = _socket_get_addrinfo(host, 
 									  service, 
 									  SERVER_SIDE_FLAGS, 
 									  &result);
 	if (status == SUCCESS) {
-		status = _socket_addrinfo_iterate(_socket_create_and_bind, result, self);
+		status = _socket_addrinfo_iterate(_socket_create_and_bind, 
+										  result, 
+										  self);
 		freeaddrinfo(result);
 	}
-	return _socket_listen(self, MAX_PENDING_CONNECTIONS); 
+	return _socket_listen(self, MAX_PENDING_CONNECTIONS);
 }
 
 int socket_accept(socket_t *listener, socket_t *peer) {
-	peer->file_descriptor = accept(listener->file_descriptor, NULL, NULL);
-	return (peer->file_descriptor == ERROR) ? ERROR : SUCCESS;
+	peer->_file_descriptor = accept(listener->_file_descriptor, NULL, NULL);
+	socket_print_error(peer->_file_descriptor,
+					   strerror(peer->_file_descriptor));
+	return (peer->_file_descriptor == ERROR) ? ERROR : SUCCESS;
 }
 
 int socket_connect(socket_t *self, const char *host, const char *service) {
 	struct addrinfo *result = NULL;
 
-	int status = _socket_get_addrinfo(self, 
-									   host, 
-									   service, 
-									   CLIENT_SIDE_FLAGS, 
-									   &result);
+	int status = _socket_get_addrinfo(host, 
+									  service, 
+									  CLIENT_SIDE_FLAGS, 
+									  &result);
 	if (status == SUCCESS) {
-		status = _socket_addrinfo_iterate(_socket_create_and_connect, result, self);
+		status = _socket_addrinfo_iterate(_socket_create_and_connect, 
+										  result, 
+										  self);
 		freeaddrinfo(result);
 	}
 	return status;
@@ -172,39 +185,41 @@ ssize_t socket_send(socket_t *self, const void *buffer, size_t length) {
 	size_t remaining_bytes = (length - sent_bytes);
 
 	while (remaining_bytes > 0 && sent_bytes_aux != ERROR) {
-		sent_bytes_aux = send(self->file_descriptor, 
+		sent_bytes_aux = send(self->_file_descriptor, 
 							  (current_buffer + sent_bytes), 
 							  remaining_bytes, 
 							  MSG_NOSIGNAL);
 		sent_bytes += sent_bytes_aux;
 		remaining_bytes = (length - sent_bytes);
 	}
+	socket_print_error(sent_bytes_aux, strerror(sent_bytes_aux));
 	return sent_bytes;
 }
 
 ssize_t socket_receive(socket_t *self, void *buffer, size_t length) {
 	char *current_buffer = buffer;
 	ssize_t received_bytes = 0;
-	ssize_t received_bytes_aux = 0;
+	ssize_t received_bytes_aux = 1;
 	size_t remaining_bytes = (length - received_bytes);
 
-	while (remaining_bytes > 0 && received_bytes != ERROR) {
-		received_bytes_aux = recv(self->file_descriptor, 
+	while (remaining_bytes > 0 && 
+		   (received_bytes_aux != ERROR && received_bytes_aux != 0)) {
+		received_bytes_aux = recv(self->_file_descriptor, 
  							      (current_buffer + received_bytes), 
 							  	  remaining_bytes, 
 							  	  MSG_NOSIGNAL);
 		received_bytes += received_bytes_aux;
 		remaining_bytes = (length - received_bytes);
 	}
+	socket_print_error(received_bytes_aux, strerror(received_bytes_aux));
 	return received_bytes;
 }
 
 static int _socket_is_in_valid_state(socket_t *self) {
-	return (self != NULL && self->file_descriptor != ERROR);
+	return (self != NULL && self->_file_descriptor != ERROR);
 }
 
-static int _socket_get_addrinfo(socket_t *self, 
-								const char *host, 
+static int _socket_get_addrinfo(const char *host, 
 								const char *service, 
 								const int flags, 
 								struct addrinfo **result) {
@@ -216,9 +231,10 @@ static int _socket_get_addrinfo(socket_t *self,
 
 	int status = getaddrinfo(host, service, &hints, result);
 	if (status == SUCCESS) {
-		return status;
+		return SUCCESS;
 	}
-	return status;
+	fprintf(stderr, "%s\n", gai_strerror(status));
+	return ERROR;
 }
 
 static int _socket_addrinfo_iterate(int (*callback)(struct addrinfo *result, 
@@ -234,7 +250,34 @@ static int _socket_addrinfo_iterate(int (*callback)(struct addrinfo *result,
 	return status;
 }
 
-static int _socket_create_and_connect(struct addrinfo *result, void *context) {
+static int _socket_create(socket_t *self, struct addrinfo *result) {
+	self->_file_descriptor = socket(result->ai_family, 
+								    result->ai_socktype, 
+								    result->ai_protocol);
+	socket_print_error(self->_file_descriptor, 
+					   strerror(self->_file_descriptor));
+	return self->_file_descriptor == SUCCESS ? SUCCESS : ERROR;
+}
+
+static int _socket_connect(socket_t *self, struct addrinfo *result) {
+	int status = connect(self->_file_descriptor, 
+	       		   		  result->ai_addr, 
+				   		  result->ai_addrlen);
+	socket_print_error(status, strerror(status));
+	return status;
+}
+
+static int _socket_bind(socket_t *self, struct addrinfo *result) {
+	int val = 1;
+	int status = ERROR;
+	setsockopt(self->_file_descriptor, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
+	status = bind(self->_file_descriptor, result->ai_addr, result->ai_addrlen);
+	socket_print_error(status, strerror(status));
+	return status;
+}
+
+static int _socket_create_and_connect(struct addrinfo *result, 
+									  void *context) {
 	socket_t *socket = context;
 	int status = ERROR;
 
@@ -246,36 +289,8 @@ static int _socket_create_and_connect(struct addrinfo *result, void *context) {
 	return status;
 }
 
-static int _socket_create(socket_t *self, struct addrinfo *result) {
-	self->file_descriptor = socket(result->ai_family, 
-								   result->ai_socktype, 
-								   result->ai_protocol);
-	return self->file_descriptor == SUCCESS ? SUCCESS : ERROR;
-}
-
-static int _socket_connect(socket_t *self, struct addrinfo *result) {
-	return connect(self->file_descriptor, 
-	       		   result->ai_addr, 
-				   result->ai_addrlen);
-}
-
-static int _socket_shutdown(socket_t *self, int channel) {
-	int status = shutdown(self->file_descriptor, channel);
-	return status == SUCCESS ? SUCCESS : ERROR;
-}
-
-static int _socket_close(socket_t *self) {
-	int status = close(self->file_descriptor);
-	return status == SUCCESS ? SUCCESS : ERROR;
-}
-
-static int _socket_bind(socket_t *self, struct addrinfo *result) {
-	int val = 1;
-	setsockopt(self->file_descriptor, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
-	return bind(self->file_descriptor, result->ai_addr, result->ai_addrlen);
-}
-
-static int _socket_create_and_bind(struct addrinfo *result, void *context) {
+static int _socket_create_and_bind(struct addrinfo *result, 
+								   void *context) {
 	socket_t *socket = context;
 	int status = ERROR;
 
@@ -288,5 +303,25 @@ static int _socket_create_and_bind(struct addrinfo *result, void *context) {
 }
 
 static int _socket_listen(socket_t *self, int backlog) {
-	return listen(self->file_descriptor, backlog) == SUCCESS ? SUCCESS : ERROR;
+	int status = listen(self->_file_descriptor, backlog);
+	socket_print_error(status, strerror(status));
+	return status;
+}
+
+static int _socket_shutdown(socket_t *self, int channel) {
+	int status = shutdown(self->_file_descriptor, channel);
+	socket_print_error(status, strerror(status));
+	return status;
+}
+
+static int _socket_close(socket_t *self) {
+	int status = close(self->_file_descriptor);
+	socket_print_error(status, strerror(status));
+	return status == SUCCESS ? SUCCESS : ERROR;
+}
+
+static void socket_print_error(int status, const char *msg) {
+	if (status == ERROR) {
+		fprintf(stderr, "%s\n", msg);
+	}
 }
