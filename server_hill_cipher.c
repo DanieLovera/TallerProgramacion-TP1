@@ -97,6 +97,7 @@ void hill_cipher_init(hill_cipher_t *self,
 					  const unsigned char *key, 
 					  size_t key_length) {
 	_hill_cipher_init_key(self, key, key_length);
+	hill_cipher_map(self->_key, self->_key_length);
 	_hill_cipher_init_result(self, NULL, 0);
 }
 
@@ -109,7 +110,7 @@ int hill_cipher_encode(hill_cipher_t *self,
 						const unsigned char *buffer, 
 						size_t length) {
 	_hill_cipher_init_result(self, buffer, length);
-	hill_cipher_map(self->_key, self->_key_length);
+	//hill_cipher_map(self->_key, self->_key_length);
 	hill_cipher_map(self->_result, self->_result_length);
 	_hill_cipher_filter(self->_result, &(self->_result_length));
 	return _hill_cipher_encode(self);
@@ -132,6 +133,7 @@ static void _hill_cipher_init_result(hill_cipher_t *self,
 									 const unsigned char *buffer, 
 									 size_t length) {	
 	if (buffer != NULL && length > 0) {
+		if (self->_result != NULL) free(self->_result);
 		if (_hill_cipher_calloc(&(self->_result), length, sizeof(char)) != ERROR) {
 			self->_result_length = length;
 			memcpy(self->_result, buffer, self->_result_length);
