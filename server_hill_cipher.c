@@ -186,13 +186,11 @@ static int _hill_cipher_encode(hill_cipher_t *self) {
 	if(status != ERROR) {	
 		memcpy(aux, self->_result, self->_result_length);
 		_hill_cipher_free(self->_result);
-
 		status = _hill_cipher_calloc(&(self->_result), result_length, sizeof(char));
 		
 		if(status != ERROR){
 			self->_result_length = result_length;
 			_hill_cipher_encode_math_ops(self, aux, dimension);
-			//_hill_cipher_free(aux);
 		}
 	}
 	_hill_cipher_free(aux);
