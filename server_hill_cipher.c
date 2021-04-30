@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdint.h>
 
 #define SUCCESS 0
 #define ERROR -1
@@ -127,6 +128,7 @@ ssize_t hill_cipher_send_result(hill_cipher_t *self,
 static void _hill_cipher_init_key(hill_cipher_t *self, 
 								  const unsigned char *key, 
 								  size_t length) {
+
 	if (key != NULL && length > 0) {
 		_hill_cipher_calloc(&(self->_key), length, sizeof(char));
 		self->_key_length = length;
@@ -219,14 +221,16 @@ static void _hill_cipher_encode_math_ops(hill_cipher_t *self,
 										 size_t dimension) {
 	int result_iterations = (self->_result_length) / dimension; 
 	int key_iterations = (self->_key_length) / dimension;
+	uint16_t result_aux = 0;
 
 	for (int i = 0; i < result_iterations; i++) {
 		for (int j = 0; j < key_iterations; j++) {
 			for (int k = 0; k < key_iterations; k++) {
-				self->_result[j + i*dimension] += (self->_key[k + j*dimension] * 
-										 		   chunk[k + i*dimension]);
+				result_aux += ((uint16_t)self->_key[k + j*dimension] * 
+							   (uint16_t)chunk[k + i*dimension]);
 			}
-			self->_result[j + i*dimension] = (self->_result[j + i*dimension]) % 26;
+			self->_result[j + i*dimension] = (unsigned char)(result_aux % 26);
+			result_aux = 0;
 		}
 	}
 }

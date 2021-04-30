@@ -1,4 +1,5 @@
 #include "common_maplib.h"
+#include <stdio.h>
 
 #define IN_RANGE 0
 #define OUT_OF_RANGE -1
