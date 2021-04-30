@@ -43,8 +43,7 @@ void hill_cipher_unmap(unsigned char *buffer, size_t length) {
 }
 
 int hill_cipher_is_valid_value(const unsigned char character) {
-	if (character == OUT_OF_RANGE_CHAR || 
-		(character > MAX_VALUE || character < MIN_VALUE)) {
+	if (character == OUT_OF_RANGE_CHAR || character > MAX_VALUE) {
 		return OUT_OF_RANGE;
 	}
 	return IN_RANGE;
@@ -59,7 +58,7 @@ static void hill_cipher_map_char(unsigned char *character) {
 }
 
 static void hill_cipher_unmap_char(unsigned char *value) {
-	if (*value >= (MIN_CHAR - MIN_CHAR) && *value <= (MAX_CHAR - MIN_CHAR)) {
+	if (*value <= (MAX_CHAR - MIN_CHAR)) {
 		*value = *value + MIN_CHAR;
 	}
 }

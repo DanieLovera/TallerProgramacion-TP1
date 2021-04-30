@@ -147,7 +147,7 @@ int socket_bind_and_listen(socket_t *self,
 									  SERVER_SIDE_FLAGS, 
 									  &result);
 	if (status == SUCCESS) {
-		status = _socket_addrinfo_iterate(_socket_create_and_bind, 
+		_socket_addrinfo_iterate(_socket_create_and_bind, 
 										  result, 
 										  self);
 		freeaddrinfo(result);

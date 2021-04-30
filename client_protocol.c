@@ -47,11 +47,11 @@ static void client_protocol_read_and_process(client_protocol_t *self,
 									  		 FILE *file) {
 	char *server_response = NULL; 
 	char *buffer = NULL;
-	ssize_t response_size = 0;
 	size_t buffer_size = 0;
 
 	ssize_t read_bytes = getline(&buffer, &buffer_size, file);
 	while(read_bytes != EOF) {
+		ssize_t response_size;
 		comm_protocol_send(comm_protocol, (unsigned char*)buffer, read_bytes);
 		response_size = comm_protocol_receive(comm_protocol, 
 								&server_response);

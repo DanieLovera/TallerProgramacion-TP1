@@ -25,7 +25,6 @@ void server_protocol_run(server_protocol_t *self,
 						const unsigned char *key, 
 						size_t key_length) {
 	char *client_request = NULL; 
-	ssize_t request_size = ERROR;
 	socket_t peer;
 	comm_protocol_t comm_protocol;
 	hill_cipher_t hill_cipher;
@@ -34,6 +33,7 @@ void server_protocol_run(server_protocol_t *self,
 	comm_protocol_init(&comm_protocol, &peer);
 	hill_cipher_init(&hill_cipher, key, key_length);
 	if (server_protocol_wait_for_connection(self, service, &peer) != ERROR) {
+		ssize_t request_size = ERROR;
 		while (request_size != PEER_CLOSED) {
 			request_size = comm_protocol_receive(&comm_protocol, &client_request);
 			if (request_size != PEER_CLOSED) {
