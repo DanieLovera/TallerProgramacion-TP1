@@ -128,7 +128,6 @@ ssize_t hill_cipher_send_result(hill_cipher_t *self,
 static void _hill_cipher_init_key(hill_cipher_t *self, 
 								  const unsigned char *key, 
 								  size_t length) {
-
 	if (key != NULL && length > 0) {
 		_hill_cipher_calloc(&(self->_key), length, sizeof(char));
 		self->_key_length = length;
