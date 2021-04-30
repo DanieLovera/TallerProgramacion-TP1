@@ -5,24 +5,24 @@
 #include <stdio.h>
 
 typedef struct client_protocol {
-	socket_t socket;
+	socket_t _socket;
 } client_protocol_t;
 
 /**
  * @brief Inicializa el protocolo del cliente.
- * @param host: Dominio de la maquina en donde correra el cliente.
- * @param service: Puerto de la maquina del cliente.
  */
-int client_protocol_init(client_protocol_t *self, 
-						 const char *host, 
-						 const char *service);
+void client_protocol_init(client_protocol_t *self);
 
 /**
  * @brief Ejecuta el protocolo cliente.
+ * @param host: Dominio de la maquina en donde correra el cliente.
+ * @param service: Puerto de la maquina del cliente.
  * @param file: archivo desde el cual el cliente lee la informacion.
- * @param service: Puerto de la maquina en el que se ubicara un socket.
  */
-void client_protocol_run(client_protocol_t *self, FILE *file);
+void client_protocol_run(client_protocol_t *self, 
+						 const char *host, 
+						 const char *service, 
+						 FILE *file);
 
 /**
  * @brief Libera los recursos del protocolo cliente.
