@@ -226,8 +226,8 @@ static void _hill_cipher_encode_math_ops(hill_cipher_t *self,
 	for (int i = 0; i < result_iterations; i++) {
 		for (int j = 0; j < key_iterations; j++) {
 			for (int k = 0; k < key_iterations; k++) {
-				result_aux += ((uint16_t)self->_key[k + j*dimension] * 
-							   (uint16_t)chunk[k + i*dimension]);
+				result_aux += (uint16_t)(self->_key[k + j*dimension] * 
+							   			 chunk[k + i*dimension]);
 			}
 			self->_result[j + i*dimension] = (unsigned char)(result_aux % 26);
 			result_aux = 0;
