@@ -50,8 +50,8 @@ void server_protocol_run(server_protocol_t *self,
 }
 
 static int server_protocol_wait_for_connection(server_protocol_t *self,  
-										const char *service, 
-										socket_t *peer) {
+											   const char *service, 
+											   socket_t *peer) {
 	int status = ERROR;
 	if (socket_bind_and_listen(&(self->_socket), HOST, service) != ERROR) {
 		status = socket_accept(&(self->_socket), peer);
