@@ -23,7 +23,7 @@ static ssize_t _comm_protocol_send_size(comm_protocol_t *self,
  * de error.
  */
 static ssize_t _comm_protocol_send_chunk(comm_protocol_t *self, 
-									  char *buffer, 
+									  const char *buffer, 
 									  ssize_t size);
 
 /**
@@ -50,7 +50,11 @@ static ssize_t _comm_protocol_receive_chunk(comm_protocol_t *self,
 										    char **buffer, 
 										 	ssize_t size);
 
-static void comm_protocol_free(char* buffer);
+/**
+* @brief Libera la memoria del buffer si es diferente de NULL.
+* @buffer: puntero a buffer  a ser liberado.
+*/
+static void comm_protocol_free(char *buffer);
 
 void comm_protocol_init(comm_protocol_t *self, socket_t *socket) {
 	self->_buffer = NULL;
@@ -63,7 +67,7 @@ void comm_protocol_uninit(comm_protocol_t *self) {
 }
 
 ssize_t comm_protocol_send(void *self, 
-						   unsigned char *buffer, 
+						   const unsigned char *buffer, 
 						   ssize_t size) {
 	comm_protocol_t *comm_protocol = (comm_protocol_t*)self;
 	ssize_t sent_bytes = _comm_protocol_send_size(comm_protocol, size);
@@ -96,7 +100,7 @@ static ssize_t _comm_protocol_send_size(comm_protocol_t *self,
 }
 
 static ssize_t _comm_protocol_send_chunk(comm_protocol_t *self, 
-									  	 char *buffer, 
+									  	 const char *buffer, 
 									  	 ssize_t size) {
 	ssize_t sent_bytes = socket_send(self->_socket, (const void*)buffer, size);
 	return sent_bytes != size ? ERROR : sent_bytes;

@@ -8,6 +8,11 @@
 #define SUCCESS 0
 #define ERROR -1
 
+/**
+ * @brief Espera por una conexion entrante del cliente.
+ * @param service: Puerto de la máquina del servidor.
+ * @param peer: Socket de comunicacion entre cliente y servidor.
+ */
 static int server_protocol_wait_for_connection(server_protocol_t *self, 
 											   const char *service, 
 											   socket_t *peer);
@@ -40,7 +45,7 @@ void server_protocol_run(server_protocol_t *self,
 				hill_cipher_encode(&hill_cipher, 
 								   (const unsigned char*)client_request, 
 								   request_size);
-				hill_cipher_send_result(&hill_cipher, comm_protocol_send, &comm_protocol);
+				hill_cipher_output_result(&hill_cipher, comm_protocol_send, &comm_protocol);
 			}
 		}
 	}
@@ -58,4 +63,3 @@ static int server_protocol_wait_for_connection(server_protocol_t *self,
 	}
 	return status;
 }
-

@@ -6,12 +6,12 @@
 #define OUT_OF_RANGE_CHAR 0xFF
 #define MIN_CHAR 'A'
 #define MAX_CHAR 'Z'
-#define MIN_VALUE (MIN_CHAR - MIN_CHAR)
 #define MAX_VALUE (MAX_CHAR - MIN_CHAR)
 
 /**
  * @brief Funcion que mapea un caracter
  * entre 'A-Z' a '0-25' y en caso de otro caracter se mapea a 0xFF.
+ * @param value: caracter a mapear.
  */
 static void hill_cipher_map_char(unsigned char *character);
 
@@ -19,6 +19,7 @@ static void hill_cipher_map_char(unsigned char *character);
  * @brief Funcion que desmapea el valor
  * entre '0-25' a 'A-Z' y en caso de otro valor no se toma accion
  * alguna, la funcion no puede retornar el caracter original.
+ * @param value: caracter a desmapear.
  */
 static void hill_cipher_unmap_char(unsigned char *value);
 
@@ -31,8 +32,8 @@ static void hill_cipher_unmap_char(unsigned char *value);
  * caracteres del buffer.
  */
 static void hill_cipher_iterate(unsigned char *buffer, 
-							   size_t length, 
-							   void (*callback)(unsigned char* character));
+							    size_t length, 
+							    void (*callback)(unsigned char* character));
 
 void hill_cipher_map(unsigned char *buffer, size_t length) {
 	hill_cipher_iterate(buffer, length, hill_cipher_map_char);
@@ -42,7 +43,7 @@ void hill_cipher_unmap(unsigned char *buffer, size_t length) {
 	hill_cipher_iterate(buffer, length, hill_cipher_unmap_char);
 }
 
-int hill_cipher_is_valid_value(const unsigned char character) {
+int hill_cipher_is_valid_value(unsigned char character) {
 	if (character == OUT_OF_RANGE_CHAR || character > MAX_VALUE) {
 		return OUT_OF_RANGE;
 	}

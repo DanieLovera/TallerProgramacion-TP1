@@ -125,7 +125,7 @@ static int _socket_is_in_valid_state(socket_t *self);
  * el mensaje sera considerado error y se imprimira en stderr.
  * @param msg: mensaje de salida por stderr.
  */
-static void socket_print_error(int status, const char *msg);
+static void _socket_print_error(int status, const char *msg);
 
 void socket_init(socket_t *self) {
 	self->_file_descriptor = ERROR;
@@ -148,8 +148,8 @@ int socket_bind_and_listen(socket_t *self,
 									  &result);
 	if (status == SUCCESS) {
 		_socket_addrinfo_iterate(_socket_create_and_bind, 
-										  result, 
-										  self);
+								 result, 
+								 self);
 		freeaddrinfo(result);
 	}
 	return _socket_listen(self, MAX_PENDING_CONNECTIONS);
@@ -157,14 +157,13 @@ int socket_bind_and_listen(socket_t *self,
 
 int socket_accept(socket_t *listener, socket_t *peer) {
 	peer->_file_descriptor = accept(listener->_file_descriptor, NULL, NULL);
-	socket_print_error(peer->_file_descriptor,
-					   strerror(peer->_file_descriptor));
+	_socket_print_error(peer->_file_descriptor,
+					    strerror(errno));
 	return (peer->_file_descriptor == ERROR) ? ERROR : SUCCESS;
 }
 
 int socket_connect(socket_t *self, const char *host, const char *service) {
 	struct addrinfo *result = NULL;
-
 	int status = _socket_get_addrinfo(host, 
 									  service, 
 									  CLIENT_SIDE_FLAGS, 
@@ -192,7 +191,7 @@ ssize_t socket_send(socket_t *self, const void *buffer, size_t length) {
 		sent_bytes += sent_bytes_aux;
 		remaining_bytes = (length - sent_bytes);
 	}
-	socket_print_error(sent_bytes_aux, strerror(sent_bytes_aux));
+	_socket_print_error(sent_bytes_aux, strerror(errno));
 	return sent_bytes;
 }
 
@@ -211,7 +210,7 @@ ssize_t socket_receive(socket_t *self, void *buffer, size_t length) {
 		received_bytes += received_bytes_aux;
 		remaining_bytes = (length - received_bytes);
 	}
-	socket_print_error(received_bytes_aux, strerror(received_bytes_aux));
+	_socket_print_error(received_bytes_aux, strerror(errno));
 	return received_bytes;
 }
 
@@ -254,16 +253,16 @@ static int _socket_create(socket_t *self, struct addrinfo *result) {
 	self->_file_descriptor = socket(result->ai_family, 
 								    result->ai_socktype, 
 								    result->ai_protocol);
-	socket_print_error(self->_file_descriptor, 
-					   strerror(self->_file_descriptor));
+	_socket_print_error(self->_file_descriptor, 
+  					    strerror(errno));
 	return self->_file_descriptor == SUCCESS ? SUCCESS : ERROR;
 }
 
 static int _socket_connect(socket_t *self, struct addrinfo *result) {
 	int status = connect(self->_file_descriptor, 
-	       		   		  result->ai_addr, 
-				   		  result->ai_addrlen);
-	socket_print_error(status, strerror(status));
+	       		   		 result->ai_addr, 
+				   		 result->ai_addrlen);
+	_socket_print_error(status, strerror(errno));
 	return status;
 }
 
@@ -274,7 +273,7 @@ static int _socket_bind(socket_t *self, struct addrinfo *result) {
 			   SO_REUSEADDR, &val, 
 			   sizeof(val));
 	status = bind(self->_file_descriptor, result->ai_addr, result->ai_addrlen);
-	socket_print_error(status, strerror(status));
+	_socket_print_error(status, strerror(errno));
 	return status;
 }
 
@@ -306,23 +305,23 @@ static int _socket_create_and_bind(struct addrinfo *result,
 
 static int _socket_listen(socket_t *self, int backlog) {
 	int status = listen(self->_file_descriptor, backlog);
-	socket_print_error(status, strerror(status));
+	_socket_print_error(status, strerror(errno));
 	return status;
 }
 
 static int _socket_shutdown(socket_t *self, int channel) {
 	int status = shutdown(self->_file_descriptor, channel);
-	socket_print_error(status, strerror(status));
+	_socket_print_error(status, strerror(errno));
 	return status;
 }
 
 static int _socket_close(socket_t *self) {
 	int status = close(self->_file_descriptor);
-	socket_print_error(status, strerror(status));
-	return status == SUCCESS ? SUCCESS : ERROR;
+	_socket_print_error(status, strerror(errno));
+	return status;
 }
 
-static void socket_print_error(int status, const char *msg) {
+static void _socket_print_error(int status, const char *msg) {
 	if (status == ERROR) {
 		fprintf(stderr, "%s\n", msg);
 	}

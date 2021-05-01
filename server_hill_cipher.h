@@ -36,9 +36,16 @@ int hill_cipher_encode(hill_cipher_t *self,
 					   const unsigned char *buffer, 
 					   size_t length);
 
-ssize_t hill_cipher_send_result(hill_cipher_t *self, 
+/**
+ * @brief Utiliza el mensaje cifrado para enviarlo segund el callback
+ * @param callback: funcion que debe enviar los datos del encriptado
+ * a un file descriptor.
+ * @param context: contexto del callback que permite modificar su
+ * estado.
+ */
+void hill_cipher_output_result(hill_cipher_t *self, 
 								ssize_t (*callback)(void *context, 
-										 			unsigned char *buffer, 
+										 			const unsigned char *buffer, 
 						   							ssize_t size), 
 								void *context);
 

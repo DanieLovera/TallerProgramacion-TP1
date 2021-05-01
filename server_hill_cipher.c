@@ -110,33 +110,34 @@ void hill_cipher_uninit(hill_cipher_t *self) {
 }
 
 int hill_cipher_encode(hill_cipher_t *self, 
-						const unsigned char *buffer, 
-						size_t length) {
+					   const unsigned char *buffer, 
+					   size_t length) {
 	_hill_cipher_init_result(self, buffer, length);
 	_hill_cipher_filter(self->_result, &(self->_result_length));
 	return _hill_cipher_encode(self);
 }
 
-ssize_t hill_cipher_send_result(hill_cipher_t *self, 
+void hill_cipher_output_result(hill_cipher_t *self, 
 								ssize_t (*callback)(void *context, 
-										 			unsigned char *buffer, 
+										 			const unsigned char *buffer, 
 						   							ssize_t size), 
 								void *context) {
-	return callback(context, self->_result, self->_result_length);
+	callback(context, self->_result, self->_result_length);
 }
 
 static void _hill_cipher_init_key(hill_cipher_t *self, 
 								  const unsigned char *key, 
 								  size_t length) {
 	if (key != NULL && length > 0) {
-		_hill_cipher_calloc(&(self->_key), length, sizeof(char));
-		self->_key_length = length;
-		memcpy(self->_key, key, self->_key_length);
+		if (_hill_cipher_calloc(&(self->_key), length, sizeof(char)) != ERROR) {
+			self->_key_length = length;
+			memcpy(self->_key, key, self->_key_length);
+			hill_cipher_map(self->_key, self->_key_length);
+		}
 	} else {
 		self->_key = NULL;
 		self->_key_length = 0;
 	}
-	hill_cipher_map(self->_key, self->_key_length);
 }
 
 static void _hill_cipher_init_result(hill_cipher_t *self, 
@@ -148,12 +149,12 @@ static void _hill_cipher_init_result(hill_cipher_t *self,
 		if (_hill_cipher_calloc(&(self->_result), length, sizeof(char)) != ERROR) {
 			self->_result_length = length;
 			memcpy(self->_result, buffer, self->_result_length);
+			hill_cipher_map(self->_result, self->_result_length);
 		}
 	} else {
 		self->_result = NULL;
 		self->_result_length = 0;
 	}
-	hill_cipher_map(self->_result, self->_result_length);
 }
 
 static void _hill_cipher_result_dimension(hill_cipher_t *self, 
@@ -210,8 +211,8 @@ static int _hill_cipher_encode(hill_cipher_t *self) {
 			self->_result_length = result_length;
 			_hill_cipher_encode_math_ops(self, buffer, dimension);
 		}
+		_hill_cipher_free(buffer);
 	}
-	_hill_cipher_free(buffer);
 	return status;
 }
 

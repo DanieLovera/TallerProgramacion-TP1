@@ -32,7 +32,7 @@ void comm_protocol_uninit(comm_protocol_t *self);
  * devuelve -1.
  */
 ssize_t comm_protocol_send(void *self, 
-						   unsigned char *buffer, 
+						   const unsigned char *buffer, 
 						   ssize_t size);
 
 /**
