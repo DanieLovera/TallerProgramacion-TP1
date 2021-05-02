@@ -41,7 +41,8 @@ En este diagrama se pueden observar las relaciones entre clases y la independenc
 
 En s?ntesis si se quisiera reemplazar el *protocolo de comunicaci?n* establecido se podr?a hacer respetando la interfaz publica de send y receive que entienden el servidor y el cliente. De la misma manera se podr?a cambiar el socket que se utiliz? en la comunicaci?n (en este caso un socket para TCP) y trabajar con otro protocolo de transmisi?n de datos sin afectar al *protocolo de comunicaci?n* e incluso se puede cambiar el tipo de *cifrado* que utiliza el servidor, pero esto llevar?a un poco de mas de trabajo pues el cliente al tener que desmapear los resultados enviados por el servidor quedo ligeramente acoplado al tipo de cifrado que se use, ya que si este utilizara otro tipo de mapeo entonces tambi?n se deber?a cambiar el m?dulo de mapeo correspondiente.  
   
-####Cliente####
+####Cliente####  
+  
 El cliente es uno de los programas principales, utiliza el m?dulo **protocolo cliente** para iniciar su ejecuci?n por lo cual este tiene las siguientes responsabilidades:  
   
 - Conectarse al servidor conociendo el dominio y el servicio de este.  
@@ -51,7 +52,7 @@ El cliente es uno de los programas principales, utiliza el m?dulo **protocolo cl
 - Desmapear los datos del servidor.
 - Mostrar los datos por salida est?ndar.
 
-A continuaci?n se presenta un diagrama de secuencia que representa esta secuenta de pasos a trav?s de los distintos m?dulos:  
+A continuaci?n se presenta un diagrama de secuencia que representa esta secuencia de pasos a trav?s de los distintos m?dulos:  
   
 ![Diagrama de secuencia de Cliente](./images/diagrama_02-Cliente_inicia_su_protocolo_.png)  
   
@@ -59,14 +60,53 @@ La ?nica responsabilidad que le quedo al protocolo de cliente y que no fue repre
   
 ####Protocolo de Comunicaci?n####  
   
-El protocolo de comucicaci?n permiti? desacoplar los m?dulos Protocolo Cliente y Protocolo Servidor, pues si no estuviera esta interfaz en medio de ambos protocolos el Cliente sabr?a como enviar datos al servidor pero tambi?n tendr?a que saber como los recibe, y esto implica conocer como el servidor le envia respuestas a sus peticiones. Por esta raz?n se coloco este m?dulo entre ambos, para que sea el traductor entre ambos extremos, de esta manera el protocolo cliente y servidor solo entienden dos mensajes de la interfaz p?blica del protocolo de com?nicaci?n:  
+El protocolo de comunicaci?n permiti? desacoplar los m?dulos Protocolo Cliente y Protocolo Servidor, pues si no estuviera esta interfaz en medio de ambos protocolos el Cliente sabr?a como enviar datos al servidor pero tambi?n tendr?a que saber como los recibe, y esto implica conocer como el servidor le envia respuestas a sus peticiones. Por esta raz?n se coloco este m?dulo entre ambos, para que sea el traductor entre ambos extremos, de esta manera el protocolo cliente y servidor solo entienden dos mensajes de la interfaz p?blica del protocolo de com?nicaci?n:  
   
 - Enviar un flujo de datos.
 - Recibir un flujo de datos.
   
-No saben mas nada de las comunicaciones y ambas m?dulos quedan desacoplados.  
+Ahora cliente y servidor no saben nada de las comunicaciones de esto se encarga el protocolo de comunicaci?n.  
+  
+![Diagrama de secuencia envio prot comm](./images/diagrama_05-Protocolo_de_comunicaci?n_realiza_un_envio_.png)  
+  
+![Diagrama de secuencia recibo prot comm](./images/diagrama_06-Protocolo_de_comunicaci?n_recibe_un_envio_.png)  
+  
+Los diagramas de secuencia ponen de manifiesto como funciona el protocolo, internamente sigue delegando responsabilidades sobre el **Socket** y al no tener responsabilidades adicionales ni dependencias es un m?dulo de alto nivel y es f?cil de reemplazar.
 
+####Servidor####  
+  
+El cliente es uno de los programas principales, utiliza el m?dulo **protocolo servidor** para iniciar su ejecuci?n por lo cual este tiene las siguientes responsabilidades:  
+  
+- Bindear un socket pasivo en la maquina local sobre un servicio.
+- Aceptar una conexion entrante del cliente.
+- Recibir los datos del cliente.
+- Cifrar los datos.
+- Enviar los datos devuelta al servidor.
+  
+A continuaci?n se presenta un diagrama de secuencia que representa los pasos del servidor a trav?s de los distintos m?dulos:  
+  
+![Diagrama de secuencia de Servidor](./images/diagrama_03-Servidor_inicia_su_protocolo_.png)  
+  
+En este caso el protocolo servidor no tiene ninguna otra responsabilidad, toda es delegada, pero puede existir el problema de, øcomo obtener los datos una vez que el cifrado haya terminado? Debido a que el m?dulo del cipher no tiene permitido modificar los datos que quiere encriptar, entonces internamente debe implementar una forma de poder sacarlos sin generar acoplamiento, esto se solucion? con un callback que ejecutar?a en protocolo del servidor pero seria llamado internamente en el cipher, en la siguiente secci?n se explicar? este detalle.
+  
+####Hill Cipher####  
+  
+El cifrador junto con el **Socket** son los m?dulos mas complejos del programa. En ellos se concetra la mayor?a de la l?gica del programa, la complejidad del cipher reside en la variaci?n del tama?o del buffer de entrada, es decir la relaci?n entre cantidad de datos a cifrar y cantidad de datos cifrados no es 1 a 1, el resultado facilmente puede ser un buffer mas grande o mas peque?o dependiendo del tama?o de la clave o la cantidad de datos que sean filtrados del buffer inicial. Por esto motivo se decidi? trabajar con memoria din?mica y adem?s como se mencion? en la secci?n anterior, asegurar que el buffer de entrada al cipher no pueda ser modificado ya que no se puede codificar sobre el mismo buffer porque el resultado podr?a ser de mayor tama?o.  
 
+Continuando con el tema introducido en el server protocol, el hecho de no poder modificar el buffer de entrada obliga a que la implementaci?n del cipher deba permitir extraer estos datos, y para hacerlo de forma gen?rica el cipher perimte que cualquier m?dulo que requiera utilizar los datos cifrados lo pueda hacer seg?n corresponda. En este caso el protocolo del server implemento una funcion que envia estos datos a trav?s del protocolo de comunicaci?n.
 
+**Funci?n que permite la salida del resultado a cualquier m?dulo.**
+¡¡¡
+    void hill_cipher_output_result(hill_cipher_t *self, 
+    							   ssize_t (*callback)(void *context, 
+    										 		   const unsigned char *buffer, 
+    						   						   ssize_t size), 
+    							   void *context) {
+    	callback(context, self->_result, self->_result_length);
+    }
+¡¡¡
+Esta funci?n trabaja con un callback que solo necesita ser implementado por los modulos que requieran obtener estos datos, y cumplan con la firma acordada. El proceso del cipher se presenta en el siguiente diagrama de secuencia.  
+  
+![Diagrama de secuencia de Servidor](./images/diagrama_04-Cifrado_Hill_de_un_mensaje.png)
 
 ---
