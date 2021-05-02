@@ -105,8 +105,17 @@ Continuando con el tema introducido en el server protocol, el hecho de no poder 
     	callback(context, self->_result, self->_result_length);
     }
 ¡¡¡
-Esta funci?n trabaja con un callback que solo necesita ser implementado por los modulos que requieran obtener estos datos, y cumplan con la firma acordada. El proceso del cipher se presenta en el siguiente diagrama de secuencia.  
+Esta funci?n trabaja con un callback que solo necesita ser implementado por los modulos que requieran obtener estos datos, y cumplan con la firma acordada.  
   
-![Diagrama de secuencia de Servidor](./images/diagrama_04-Cifrado_Hill_de_un_mensaje.png)
+A continuaci?n se presenta el proceso del cipher para encriptar un mensaje:  
+  
+![Diagrama de secuencia de Servidor](./images/diagrama_04-Cifrado_Hill_de_un_mensaje.png)  
+  
+Como se puede notar el proceso de cifrado delega en la biblioteca **Maplib** la responsabilidad del mapeo, esto fue necesario para evitar que el cliente accediera al cifrador unicamente por estar relacionado a su mapeo.  
+  
+---
+###Conclusiones###  
+  
+Luego de haber desarrollado el cliente-servidor, se puede decir que el tema realmente complicado fue la creaci?n del TDA socket, ya que esta relacionado a las bibliotecas est?ndar de C y requiere mucho cuidado y atenci?n para implementar correctamente las funciones que permitir?n construir el cliente y el servidor. Una vez superado este problema solo queda tomar decisiones de dise?o respecto a como se implemneta el cipher por ejemplo, que en este caso se decidio usar memoria din?mica sin alguna otra abstracci?n de por medio, que hubiese sido posible pero complicar?a el dise?o por las operaciones entre vectores que se tienen que realizar constantemente, pero trabajando por bloques, probando cada uno de ellos de forma independiente y con cuidado se logran resultados satisfactorios.
 
 ---
