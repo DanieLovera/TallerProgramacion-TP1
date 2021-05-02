@@ -20,7 +20,8 @@ Cada uno de ellos tambi?n tienen cierto nivel de abstracci?n internamente, pero 
   
 En esta secci?n se presentan detalles de implementaci?n sobre los cuatro m?dulos principales junto con algunos diagramas que tienen como objetivo ayudarle al lector a entender el dise?o propuesto.  
   
-A continuaci?n se presenta un diagrama UML de clases que representa al modelo y se hacen explicitos algunos modulos extras empleados en el dise?o.    
+A continuaci?n se presenta un diagrama UML de clases que representa al modelo y se hacen explicitos algunos modulos extras empleados en el dise?o.  
+> Previo a continuar con el trabajo, el lector debe saber que los diagramas UML presentados en esta secci?n no son una representaci?n exacta de la implementaci?n que se encuentra en el repositorio. Existen diferencias en nombres, firmas o tipos de datos de ciertas funciones por la imposibilidad de trabajar con objetos en C, por lo cual estos diagramas tratan de ser un poco mas gen?ricos y abstractos para que el dise?o del programa pueda ser entendido y reproducido en cualquier otro lenguaje de programaci?n. Por su puesto esta generalizaci?n no hace que el c?digo presentado no sea fiel a los diagramas.
   
 ![Diagrama de clases](./images/diagrama_01.png)
   
@@ -35,5 +36,28 @@ En este diagrama se pueden observar las relaciones entre clases y la independenc
     2. El protocolo de recepci?n consiste en realizar una primera recepci?n con la cantidad de bytes que se recibiran en formato big endian de dos bytes y luego recibir el mensaje real.  
 
 En s?ntesis si se quisiera reemplazar el *protocolo de comunicaci?n* establecido se podr?a hacer respetando la interfaz publica de send y receive que entienden el servidor y el cliente. De la misma manera se podr?a cambiar el socket que se utiliz? en la comunicaci?n (en este caso un socket para TCP) y trabajar con otro protocolo de transmisi?n de datos sin afectar al *protocolo de comunicaci?n* e incluso se puede cambiar el tipo de *cifrado* que utiliza el servidor, pero esto llevar?a un poco de mas de trabajo pues el cliente al tener que desmapear los resultados enviados por el servidor quedo ligeramente acoplado al tipo de cifrado que se use, ya que si este utilizara otro tipo de mapeo entonces tambi?n se deber?a cambiar el m?dulo de mapeo correspondiente.  
+  
+####Cliente####
+El cliente es uno de los programas principales, utiliza el m?dulo **protocolo cliente** para iniciar su ejecuci?n por lo cual este tiene las siguientes responsabilidades:  
+  
+- Conectarse al servidor conociendo el dominio y el servicio de este.  
+- Leer desde un archivo de texto o por entrada est?ndar los datos que se enviar?n al servidor (esta es la unica responsabilidad que realmente realiza pues las demas son delegadas en otros m?dulos).  
+- Enviar los datos al servidor y esperar por una respuesta.
+- Recibir los datos del servidor.
+- Desmapear los datos del servidor.
+- Mostrar los datos por salida est?ndar.
+
+A continuaci?n se presenta un diagrama de secuencia que representa esta secuenta de pasos a trav?s de los distintos m?dulos:  
+  
+![Diagrama de secuencia de Cliente](./images/diagrama_02-Cliente_inicia_su_protocolo_.png)  
+  
+
+
+
+
+
+
+
+
 
 ---
