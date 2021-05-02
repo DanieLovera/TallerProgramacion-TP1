@@ -20,8 +20,12 @@ Cada uno de ellos tambi?n tienen cierto nivel de abstracci?n internamente, pero 
   
 En esta secci?n se presentan detalles de implementaci?n sobre los cuatro m?dulos principales junto con algunos diagramas que tienen como objetivo ayudarle al lector a entender el dise?o propuesto.  
   
+> Previo a continuar con el trabajo, el lector debe saber que los diagramas UML presentados en esta secci?n no son una representaci?n exacta de la implementaci?n que se encuentra en el repositorio. Existen diferencias en nombres, firmas, tipos de datos o simplificaciones en los diagramas de secuencias, por lo cual estos diagramas tratan de ser un poco mas gen?ricos y abstractos para que el dise?o del programa pueda ser entendido y reproducido por el lector en cualquier otro lenguaje de programaci?n. Por su puesto esta generalizaci?n no evita que el c?digo presentado sea fiel a los diagramas.  
+  
 A continuaci?n se presenta un diagrama UML de clases que representa al modelo y se hacen explicitos algunos modulos extras empleados en el dise?o.  
-> Previo a continuar con el trabajo, el lector debe saber que los diagramas UML presentados en esta secci?n no son una representaci?n exacta de la implementaci?n que se encuentra en el repositorio. Existen diferencias en nombres, firmas o tipos de datos de ciertas funciones por la imposibilidad de trabajar con objetos en C, por lo cual estos diagramas tratan de ser un poco mas gen?ricos y abstractos para que el dise?o del programa pueda ser entendido y reproducido en cualquier otro lenguaje de programaci?n. Por su puesto esta generalizaci?n no hace que el c?digo presentado no sea fiel a los diagramas.
+  
+
+####Modelo del programa####  
   
 ![Diagrama de clases](./images/diagrama_01.png)
   
@@ -41,7 +45,7 @@ En s?ntesis si se quisiera reemplazar el *protocolo de comunicaci?n* establecido
 El cliente es uno de los programas principales, utiliza el m?dulo **protocolo cliente** para iniciar su ejecuci?n por lo cual este tiene las siguientes responsabilidades:  
   
 - Conectarse al servidor conociendo el dominio y el servicio de este.  
-- Leer desde un archivo de texto o por entrada est?ndar los datos que se enviar?n al servidor (esta es la unica responsabilidad que realmente realiza pues las demas son delegadas en otros m?dulos).  
+- Leer desde un archivo de texto o por entrada est?ndar los datos que se enviar?n al servidor.  
 - Enviar los datos al servidor y esperar por una respuesta.
 - Recibir los datos del servidor.
 - Desmapear los datos del servidor.
@@ -51,11 +55,16 @@ A continuaci?n se presenta un diagrama de secuencia que representa esta secuenta
   
 ![Diagrama de secuencia de Cliente](./images/diagrama_02-Cliente_inicia_su_protocolo_.png)  
   
-
-
-
-
-
+La ?nica responsabilidad que le quedo al protocolo de cliente y que no fue representada en el diagrama fue, la lectura del archivo de texto o de entrada est?ndar. Esta consiste en utilizar la funcion **getline** de la librer?a estandar de C para leer y repetir el procesamiento de (envio, recepcion y desmapeo) hasta terminar el archivo pues tiene el beneficio de incluir siempre el caracter ©\n© dentro de la l?nea le?da. El resto es delegado en otros m?dulos.  
+  
+####Protocolo de Comunicaci?n####  
+  
+El protocolo de comucicaci?n permiti? desacoplar los m?dulos Protocolo Cliente y Protocolo Servidor, pues si no estuviera esta interfaz en medio de ambos protocolos el Cliente sabr?a como enviar datos al servidor pero tambi?n tendr?a que saber como los recibe, y esto implica conocer como el servidor le envia respuestas a sus peticiones. Por esta raz?n se coloco este m?dulo entre ambos, para que sea el traductor entre ambos extremos, de esta manera el protocolo cliente y servidor solo entienden dos mensajes de la interfaz p?blica del protocolo de com?nicaci?n:  
+  
+- Enviar un flujo de datos.
+- Recibir un flujo de datos.
+  
+No saben mas nada de las comunicaciones y ambas m?dulos quedan desacoplados.  
 
 
 
