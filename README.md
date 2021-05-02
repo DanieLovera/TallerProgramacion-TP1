@@ -20,8 +20,10 @@ Cada uno de ellos tambi?n tienen cierto nivel de abstracci?n internamente, pero 
   
 En esta secci?n se presentan detalles de implementaci?n sobre los cuatro m?dulos principales junto con algunos diagramas que tienen como objetivo ayudarle al lector a entender el dise?o propuesto.  
   
-A continuaci?n se presenta un diagrama UML de clases que representa al modelo del trabajo.  
+A continuaci?n se presenta un diagrama UML de clases que representa al modelo y se hacen explicitos algunos modulos extras empleados en el dise?o.    
   
 ![Diagrama de clases](./images/diagrama_01.png)
+  
+
 
 ---
