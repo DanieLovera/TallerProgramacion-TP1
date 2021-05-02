@@ -57,7 +57,7 @@ A continuación se presenta un diagrama de secuencia que representa esta secuenc
   
 La única responsabilidad que le quedo al protocolo del cliente y que no fue representada en el diagrama fue, la lectura del archivo de texto o de entrada estándar. Esta consiste en utilizar la función **getline** de la biblioteca estándar de C para leer y repetir el procesamiento de (envio, recepción y desmapeo) hasta terminar el archivo pues tiene el beneficio de incluir siempre el caracter '\n' dentro de la línea leída. El resto es delegado en otros módulos.  
   
-####Protocolo de Comunicación####
+#### Protocolo de Comunicación ####  
   
 El protocolo de comunicación permite desacoplar los módulos Protocolo Cliente y Protocolo Servidor, pues si no estuviera esta interfaz en medio de ambos protocolos el Cliente sabría como enviar datos al servidor pero también tendría que saber como los recibe, y esto implica conocer como el servidor le envía respuestas a sus peticiones. Por esta razón se coloco este módulo entre ambos, para que sea el traductor entre los extremos, de esta manera el protocolo cliente y servidor solo entienden dos mensajes de la interfaz pública del protocolo de comunicación:  
   
