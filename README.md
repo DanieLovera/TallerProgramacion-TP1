@@ -30,7 +30,7 @@ A continuación se presenta un diagrama UML de clases que representa al modelo y
   
 En este diagrama se pueden observar las relaciones entre clases y la independencia entre ellas:  
   
-- Los **protocolos cliente** y **servidor** no conocen al protocolo de comunicación, su unica responsabilidad sera ejecutar los programas cliente y servidor. De la comunicación entre ellos se encarga el protocolo de comunicación quien es el que conoce como se enviar?n y recibiran datos del cliente al servidor y viceversa.  
+- Los **protocolos cliente** y **servidor** no conocen al protocolo de comunicación, su unica responsabilidad sera ejecutar los programas cliente y servidor. De la comunicación entre ellos se encarga el protocolo de comunicación quien es el que conoce como se enviarón y recibiran datos del cliente al servidor y viceversa.  
 - El **protocolo cliente** debe desmapear el resultado enviado como respuesta por el servidor y para esto utiliza una  librería llamada **Maplib**, con esto se evita que el cliente conozca directamente la interfaz del **Hill Cipher** y a su vez se elimina la responsabilidad de mapear al cipher.
 - El **protocolo servidor** debe cifrar el mensaje enviado por el cliente además de implementar las funciones que debe ejecutar el servidor por lo cual delega la responsabilidad del cifrado sobre el **Hill Cipher** y utilizando su interfaz pública.  
 - El **protocolo de comunicación** es el encargado de conocer como se transmiten los mensajes entre ambos extremos de la comunicación e internamente debe utilizar un **Socket** para realizar efectivamente la transmisión de datos:   
